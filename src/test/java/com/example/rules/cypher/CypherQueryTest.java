@@ -1,24 +1,33 @@
 package com.example.rules.cypher;
 
 
-import com.example.rules.controller.model.*;
+import com.example.rules.controller.model.Rule;
+import com.example.rules.controller.model.expression.CompositeExpression;
+import com.example.rules.controller.model.expression.Condition;
+import com.example.rules.controller.model.expression.Expression;
+import com.example.rules.controller.model.expression.ExpressionObject;
+import com.example.rules.cypher.action.Action;
 import com.example.rules.cypher.query.CypherQuery;
+import com.example.rules.cypher.query.operator.BinaryLogicalOperator;
+import com.example.rules.cypher.query.operator.ConditionOperator;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
 
+import static com.example.rules.cypher.expression.ObjectAttribute.*;
+import static com.example.rules.cypher.expression.ObjectType.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class CypherQueryTest {
     @Test
     public void testPodCode() {
         var expression = Expression.builder()
-                .attribute(new Attribute(AttributeType.POD, "code"))
+                .object(new ExpressionObject(POD, CODE))
                 .condition(new Condition("testValue", ConditionOperator.EQUALS))
                 .build();
-        var filterRule = FilterRule.builder()
+        var filterRule = Rule.builder()
                 .expression(expression)
-                .action(FilterRuleAction.ENABLE)
+                .action(Action.ENABLE)
                 .build();
         var query = CypherQuery.builder(filterRule).build();
         String expected = "MATCH (pol:Port)-[:POL]->(route:Direct)<-[:POD]-(pod:Port)\n" +
@@ -33,12 +42,12 @@ public class CypherQueryTest {
     @Test
     public void testPodArea() {
         var expression = Expression.builder()
-                .attribute(new Attribute(AttributeType.POD, "area"))
+                .object(new ExpressionObject(POD, AREA))
                 .condition(new Condition("A1", ConditionOperator.NOT_EQUALS))
                 .build();
-        var filterRule = FilterRule.builder()
+        var filterRule = Rule.builder()
                 .expression(expression)
-                .action(FilterRuleAction.DISABLE)
+                .action(Action.DISABLE)
                 .build();
         var query = CypherQuery.builder(filterRule).build();
         String expected = "MATCH (pol:Port)-[:POL]->(route:Direct)<-[:POD]-(pod:Port)\n" +
@@ -53,12 +62,12 @@ public class CypherQueryTest {
     @Test
     public void testPodCountry() {
         var expression = Expression.builder()
-                .attribute(new Attribute(AttributeType.POD, "country"))
+                .object(new ExpressionObject(POD, COUNTRY))
                 .condition(new Condition("IL", ConditionOperator.EQUALS))
                 .build();
-        var filterRule = FilterRule.builder()
+        var filterRule = Rule.builder()
                 .expression(expression)
-                .action(FilterRuleAction.ENABLE)
+                .action(Action.ENABLE)
                 .build();
         var query = CypherQuery.builder(filterRule).build();
         String expected = "MATCH (pol:Port)-[:POL]->(route:Direct)<-[:POD]-(pod:Port)\n" +
@@ -74,12 +83,12 @@ public class CypherQueryTest {
     @Test
     public void testPolCode() {
         var expression = Expression.builder()
-                .attribute(new Attribute(AttributeType.POL, "code"))
+                .object(new ExpressionObject(POL, CODE))
                 .condition(new Condition("testValue", ConditionOperator.EQUALS))
                 .build();
-        var filterRule = FilterRule.builder()
+        var filterRule = Rule.builder()
                 .expression(expression)
-                .action(FilterRuleAction.DISABLE)
+                .action(Action.DISABLE)
                 .build();
         var query = CypherQuery.builder(filterRule).build();
         String expected = "MATCH (pol:Port)-[:POL]->(route:Direct)<-[:POD]-(pod:Port)\n" +
@@ -92,21 +101,21 @@ public class CypherQueryTest {
     }
 
     @Test
-    public void testPodCodeMultiple() {
+    public void testPodCodeMany() {
         var expression = Expression.builder()
-                .attribute(new Attribute(AttributeType.POD, "code"))
+                .object(new ExpressionObject(POD, CODE))
                 .condition(new Condition("testValue", ConditionOperator.EQUALS))
                 .build();
         var compositeExpression = CompositeExpression.builder()
                 .operator(BinaryLogicalOperator.OR)
                 .expression(Expression.builder()
-                        .attribute(new Attribute(AttributeType.POD, "code"))
+                        .object(new ExpressionObject(POD, CODE))
                         .condition(new Condition("testValue2", ConditionOperator.EQUALS))
                         .build()).build();
-        var filterRule = FilterRule.builder()
+        var filterRule = Rule.builder()
                 .expression(expression)
                 .compositeExpressions(List.of(compositeExpression))
-                .action(FilterRuleAction.DISABLE)
+                .action(Action.DISABLE)
                 .build();
         var query = CypherQuery.builder(filterRule).build();
         String expected = "MATCH (pol:Port)-[:POL]->(route:Direct)<-[:POD]-(pod:Port)\n" +
@@ -121,21 +130,21 @@ public class CypherQueryTest {
     }
 
     @Test
-    public void testPodCountryMultiple() {
+    public void testPodCountryMany() {
         var expression = Expression.builder()
-                .attribute(new Attribute(AttributeType.POD, "country"))
+                .object(new ExpressionObject(POD, COUNTRY))
                 .condition(new Condition("IL", ConditionOperator.EQUALS))
                 .build();
         var compositeExpression = CompositeExpression.builder()
                 .operator(BinaryLogicalOperator.OR)
                 .expression(Expression.builder()
-                        .attribute(new Attribute(AttributeType.POD, "country"))
+                        .object(new ExpressionObject(POD, COUNTRY))
                         .condition(new Condition("ES", ConditionOperator.EQUALS))
                         .build()).build();
-        var filterRule = FilterRule.builder()
+        var filterRule = Rule.builder()
                 .expression(expression)
                 .compositeExpressions(List.of(compositeExpression))
-                .action(FilterRuleAction.DISABLE)
+                .action(Action.DISABLE)
                 .build();
         var query = CypherQuery.builder(filterRule).build();
         String expected = "MATCH (pol:Port)-[:POL]->(route:Direct)<-[:POD]-(pod:Port)\n" +
@@ -153,19 +162,19 @@ public class CypherQueryTest {
     @Test
     public void testPodPolCountry() {
         var expression = Expression.builder()
-                .attribute(new Attribute(AttributeType.POD, "country"))
+                .object(new ExpressionObject(POD, COUNTRY))
                 .condition(new Condition("IL", ConditionOperator.EQUALS))
                 .build();
         var compositeExpression = CompositeExpression.builder()
                 .operator(BinaryLogicalOperator.AND)
                 .expression(Expression.builder()
-                        .attribute(new Attribute(AttributeType.POL, "country"))
+                        .object(new ExpressionObject(POL, COUNTRY))
                         .condition(new Condition("ES", ConditionOperator.EQUALS))
                         .build()).build();
-        var filterRule = FilterRule.builder()
+        var filterRule = Rule.builder()
                 .expression(expression)
                 .compositeExpressions(List.of(compositeExpression))
-                .action(FilterRuleAction.ENABLE)
+                .action(Action.ENABLE)
                 .build();
         var query = CypherQuery.builder(filterRule).build();
         String expected = "MATCH (pol:Port)-[:POL]->(route:Direct)<-[:POD]-(pod:Port)\n" +
@@ -184,12 +193,12 @@ public class CypherQueryTest {
     @Test
     public void testLineName() {
         var expression = Expression.builder()
-                .attribute(new Attribute(AttributeType.LINE, "name"))
+                .object(new ExpressionObject(LINE, NAME))
                 .condition(new Condition("Test-Line", ConditionOperator.EQUALS))
                 .build();
-        var filterRule = FilterRule.builder()
+        var filterRule = Rule.builder()
                 .expression(expression)
-                .action(FilterRuleAction.ENABLE)
+                .action(Action.ENABLE)
                 .build();
         var query = CypherQuery.builder(filterRule).build();
         String expected = "MATCH (pol:Port)-[:POL]->(route:Direct)<-[:POD]-(pod:Port)\n" +
@@ -197,6 +206,30 @@ public class CypherQueryTest {
                 "WHERE route.state = 0\n" +
                 "AND line.name=$line_name_0\n" +
                 "SET route.state = 1";
+        assertEquals(expected, query.getQuery());
+        assertEquals(1, query.getParams().size());
+        assertEquals(expression.getCondition().getValue(), query.getParams().get("line_name_0"));
+    }
+
+    @Test
+    public void testLineBusinessUnitCabotage() {
+        var expression = Expression.builder()
+                .object(new ExpressionObject(LINE, NAME))
+                .condition(new Condition("Test-Line", ConditionOperator.EQUALS))
+                .build();
+        var filterRule = Rule.builder()
+                .expression(expression)
+                .action(Action.CABOTAGE)
+                .build();
+        var query = CypherQuery.builder(filterRule).build();
+        String expected = "MATCH (pol:Port)-[:POL]->(route:Direct)<-[:POD]-(pod:Port)\n" +
+                "MATCH (pod)-[:IN]->(podCountry:Country)\n" +
+                "MATCH (pol)-[:IN]->(polCountry:Country)\n" +
+                "UNWIND route.lines as lineName MATCH (line:Line {name: lineName})\n" +
+                "WHERE route.state = 0\n" +
+                "AND line.name=$line_name_0\n" +
+                "AND polCountry=podCountry\n" +
+                "SET route.state = -1";
         assertEquals(expected, query.getQuery());
         assertEquals(1, query.getParams().size());
         assertEquals(expression.getCondition().getValue(), query.getParams().get("line_name_0"));

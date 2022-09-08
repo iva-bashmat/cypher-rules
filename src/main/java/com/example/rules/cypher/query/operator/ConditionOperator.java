@@ -1,4 +1,4 @@
-package com.example.rules.controller.model;
+package com.example.rules.cypher.query.operator;
 
 public enum ConditionOperator {
     EQUALS("="), NOT_EQUALS("!=");

@@ -1,5 +1,6 @@
-package com.example.rules.controller.model;
+package com.example.rules.controller.model.expression;
 
+import com.example.rules.cypher.query.operator.ConditionOperator;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
