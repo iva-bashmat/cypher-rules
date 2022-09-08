@@ -52,7 +52,7 @@ public class CypherQueryTest {
         var query = CypherQuery.builder(filterRule).build();
         String expected = "MATCH (pol:Port)-[:POL]->(route:Direct)<-[:POD]-(pod:Port)\n" +
                 "WHERE route.state = 0\n" +
-                "AND pod.area!=$pod_area_0\n" +
+                "AND pod.area<>$pod_area_0\n" +
                 "SET route.state = -1";
         assertEquals(expected, query.getQuery());
         assertEquals(1, query.getParams().size());
@@ -194,7 +194,7 @@ public class CypherQueryTest {
     public void testLineName() {
         var expression = Expression.builder()
                 .object(new ExpressionObject(LINE, NAME))
-                .condition(new Condition("Test-Line", ConditionOperator.EQUALS))
+                .condition(new Condition("Test-Line", ConditionOperator.NOT_EQUALS))
                 .build();
         var filterRule = Rule.builder()
                 .expression(expression)
@@ -204,7 +204,7 @@ public class CypherQueryTest {
         String expected = "MATCH (pol:Port)-[:POL]->(route:Direct)<-[:POD]-(pod:Port)\n" +
                 "UNWIND route.lines as lineName MATCH (line:Line {name: lineName})\n" +
                 "WHERE route.state = 0\n" +
-                "AND line.name=$line_name_0\n" +
+                "AND line.name<>$line_name_0\n" +
                 "SET route.state = 1";
         assertEquals(expected, query.getQuery());
         assertEquals(1, query.getParams().size());
