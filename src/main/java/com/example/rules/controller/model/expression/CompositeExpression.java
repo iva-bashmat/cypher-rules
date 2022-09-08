@@ -1,28 +1,23 @@
-package com.example.rules.controller.model;
+package com.example.rules.controller.model.expression;
 
+import com.example.rules.cypher.query.operator.BinaryLogicalOperator;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.validation.Valid;
-import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
-import java.util.List;
 
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class FilterRule {
-    @NotEmpty
-    private String name;
+public class CompositeExpression {
+    @NotNull
+    private BinaryLogicalOperator operator;
+
     @NotNull
     @Valid
     private Expression expression;
-    @Valid
-    private List<CompositeExpression> compositeExpressions;
-    @NotNull
-    private FilterRuleAction action;
-
 }

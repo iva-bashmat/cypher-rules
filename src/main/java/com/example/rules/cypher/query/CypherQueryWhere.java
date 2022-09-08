@@ -1,6 +1,6 @@
 package com.example.rules.cypher.query;
 
-import com.example.rules.controller.model.BinaryLogicalOperator;
+import com.example.rules.cypher.query.operator.BinaryLogicalOperator;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;

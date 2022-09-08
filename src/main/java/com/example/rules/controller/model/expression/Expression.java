@@ -1,4 +1,4 @@
-package com.example.rules.controller.model;
+package com.example.rules.controller.model.expression;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -15,7 +15,7 @@ import javax.validation.constraints.NotNull;
 public class Expression {
     @NotNull
     @Valid
-    private Attribute attribute;
+    private ExpressionObject object;
     @NotNull
     @Valid
     private Condition condition;

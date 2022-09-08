@@ -1,6 +1,6 @@
 package com.example.rules.controller;
 
-import com.example.rules.controller.model.FilterRule;
+import com.example.rules.controller.model.Rule;
 import com.example.rules.service.RuleService;
 import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -18,7 +18,7 @@ public class RulesController {
     private final RuleService ruleService;
     
     @PostMapping("/run")
-    public void runRule(@RequestBody @Valid FilterRule rule) {
+    public void runRule(@RequestBody @Valid Rule rule) {
         ruleService.runRule(rule);
     }
 

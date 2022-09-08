@@ -1,8 +1,12 @@
 package com.example.rules.cypher.query;
 
-import com.example.rules.controller.model.*;
-import com.example.rules.cypher.AttributeFactory;
-import com.example.rules.cypher.attribute.AttributeProperty;
+import com.example.rules.controller.model.Rule;
+import com.example.rules.controller.model.expression.Condition;
+import com.example.rules.controller.model.expression.Expression;
+import com.example.rules.cypher.action.Action;
+import com.example.rules.cypher.expression.CypherObjectFactory;
+import com.example.rules.cypher.query.match.AdditionalMatch;
+import com.example.rules.cypher.query.operator.BinaryLogicalOperator;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -15,19 +19,19 @@ public class CypherQuery {
     private String query;
     private Map<String, Object> params;
 
-    public static CypherQueryBuilder builder(FilterRule rule) {
+    public static CypherQueryBuilder builder(Rule rule) {
         return new CypherQueryBuilder(rule);
     }
 
     public static class CypherQueryBuilder {
-        private final AttributeFactory attributeFactory;
+        private final CypherObjectFactory attributeFactory;
         private final Set<String> matches;
         private final List<CypherQueryWhere> where;
         private String action;
         private final Map<String, Object> params;
 
-        private CypherQueryBuilder(FilterRule rule) {
-            attributeFactory = new AttributeFactory();
+        private CypherQueryBuilder(Rule rule) {
+            attributeFactory = CypherObjectFactory.getInstance();
             matches = new HashSet<>();
             where = new ArrayList<>();
             params = new HashMap<>();
@@ -41,34 +45,31 @@ public class CypherQuery {
             }
         }
 
-        private CypherQueryBuilder addExpression(Expression expression) {
-            return addExpression(BinaryLogicalOperator.AND, expression);
+        private void addExpression(Expression expression) {
+            addExpression(BinaryLogicalOperator.AND, expression);
         }
 
-        public CypherQueryBuilder addExpression(BinaryLogicalOperator logicalOperator, Expression expression) {
-            var attributeProperty = attributeFactory.getAttributeProperty(expression.getAttribute().getType()
-                    , expression.getAttribute().getProperty());
+        public void addExpression(BinaryLogicalOperator logicalOperator, Expression expression) {
+            var attribute = attributeFactory.getAttributeProperty(expression.getObject().getType()
+                    , expression.getObject().getAttribute());
 
-            addMatch(attributeProperty);
-            addWhere(logicalOperator, attributeProperty.getCypherProperty(), expression.getCondition());
-
-            return this;
+            attribute.getAdditionalMatch().map(AdditionalMatch::getMatchStatement).ifPresent(matches::add);
+            addExpressionWhere(logicalOperator, attribute.getCypherAttributeName(), expression.getCondition());
         }
 
-        private void addMatch(AttributeProperty attributeProperty) {
-            attributeProperty.getMatch().getAdditionalMatch().ifPresent(matches::add);
-        }
-
-        private void addWhere(BinaryLogicalOperator logicalOperator, String cypherProperty, Condition condition) {
+        private void addExpressionWhere(BinaryLogicalOperator logicalOperator, String cypherProperty, Condition condition) {
             var paramName = cypherProperty.replace(".", "_") + "_" + params.size();
             where.add(new CypherQueryWhere(logicalOperator,
                     cypherProperty + condition.getOperator().getCypherOperator() + "$" + paramName));
             params.put(paramName, condition.getValue());
         }
 
-        private CypherQueryBuilder addAction(FilterRuleAction ruleAction) {
-            action = ruleAction.getCypherUpdate();
-            return this;
+        private void addAction(Action action) {
+            var actionHandler = action.getActionHandler();
+
+            this.action = actionHandler.getActionCypher();
+            actionHandler.getAdditionalMatches().stream().map(AdditionalMatch::getMatchStatement).forEach(matches::add);
+            actionHandler.getWhere().ifPresent(where::add);
         }
 
         public CypherQuery build() {
