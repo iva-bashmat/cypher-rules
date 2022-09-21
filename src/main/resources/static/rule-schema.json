@@ -1,0 +1,49 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "http://localhost:8080/ruleSchema.json",
+  "title": "rule",
+  "description": "JSON Schema describing rule",
+  "type": "object",
+  "properties": {
+    "condition": {
+      "$ref": "http://localhost:8080/rule-condition-schema.json"
+    },
+    "compositeConditions": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "condition": {
+            "$ref": "http://localhost:8080/rule-condition-schema.json"
+          },
+          "operator": {
+            "type": "string",
+            "enum": [
+              "AND",
+              "OR"
+            ]
+          }
+        },
+        "required": [
+          "condition",
+          "operator"
+        ]
+      }
+    },
+    "name": {
+      "type": "string"
+    },
+    "action": {
+      "type": "string",
+      "enum": [
+        "ENABLE",
+        "DISABLE"
+      ]
+    }
+  },
+  "required": [
+    "condition",
+    "name",
+    "action"
+  ]
+}

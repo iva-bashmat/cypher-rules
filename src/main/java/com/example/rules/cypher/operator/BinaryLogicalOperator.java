@@ -1,4 +1,4 @@
-package com.example.rules.cypher.query.operator;
+package com.example.rules.cypher.operator;
 
 public enum BinaryLogicalOperator {
     AND, OR

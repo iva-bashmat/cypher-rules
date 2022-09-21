@@ -1,0 +1,19 @@
+{
+  "name": "A1-to-A2-disable",
+  "condition": {
+    "propertyName": "route.pol.area",
+    "propertyValue": "A1",
+    "operator": "EQUALS"
+  },
+  "compositeConditions": [
+    {
+      "operator": "AND",
+      "condition": {
+        "propertyName": "route.pod.area",
+        "propertyValue": "A2",
+        "operator": "EQUALS"
+      }
+    }
+  ],
+  "action": "DISABLE"
+}

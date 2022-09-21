@@ -1,0 +1,37 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "http://localhost:8080/ruleConditionSchema.json",
+  "title": "ruleCondition",
+  "description": "JSON Schema describing rule condition",
+  "type": "object",
+  "properties": {
+    "propertyName": {
+      "type": "string",
+      "enum": [
+        "route.pol.code",
+        "route.pol.area",
+        "route.pol.country",
+        "route.pod.code",
+        "route.pod.area",
+        "route.pod.country",
+        "route.line.name",
+        "route.line.businessUnit"
+      ]
+    },
+    "propertyValue": {
+      "type": "string"
+    },
+    "operator": {
+      "type": "string",
+      "enum": [
+        "EQUALS",
+        "NOT_EQUALS"
+      ]
+    }
+  },
+  "required": [
+    "propertyName",
+    "propertyValue",
+    "operator"
+  ]
+}

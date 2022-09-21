@@ -1,11 +1,37 @@
 package com.example.rules.cypher;
 
+import com.example.rules.controller.model.Rule;
+import com.example.rules.controller.model.RuleCondition;
+import com.example.rules.cypher.action.Action;
+import com.example.rules.cypher.condition.ConditionProperty;
+import com.example.rules.cypher.operator.ConditionOperator;
 import org.junit.jupiter.api.Test;
 import org.neo4j.cypherdsl.core.Cypher;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class CypherQueryDSLTest {
+
+    @Test
+    public void testBuildPodCode() {
+        var rule = Rule.builder()
+                .name("pod-code")
+                .condition(RuleCondition.builder()
+                        .propertyName(ConditionProperty.POD_CODE)
+                        .propertyValue("testValue")
+                        .operator(ConditionOperator.EQUALS).build())
+                .action(Action.ENABLE)
+                .build();
+
+        var statement = new CypherStatementBuilder(rule).build();
+        String expected = "MATCH (pol:`Port`)-[:`POL`]->(route:`Route`)<-[:`POD`]-(pod:`Port`) " +
+                "WHERE (pod.code = $pod_code_0 AND route.state = 0) " +
+                "SET route.state = 1 " +
+                "RETURN route";
+        assertEquals(expected, statement.getCypher());
+        assertEquals(1, statement.getParameters().size());
+        assertEquals(rule.getCondition().getPropertyValue(), statement.getParameters().get("pod_code_0"));
+    }
 
     @Test
     public void testPodCode() {

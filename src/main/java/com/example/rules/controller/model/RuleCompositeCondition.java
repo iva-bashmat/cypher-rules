@@ -1,6 +1,6 @@
-package com.example.rules.cypher.query;
+package com.example.rules.controller.model;
 
-import com.example.rules.cypher.query.operator.BinaryLogicalOperator;
+import com.example.rules.cypher.operator.BinaryLogicalOperator;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class CypherQueryWhere {
+public class RuleCompositeCondition {
     private BinaryLogicalOperator operator;
-    private String where;
+    private RuleCondition condition;
 }
