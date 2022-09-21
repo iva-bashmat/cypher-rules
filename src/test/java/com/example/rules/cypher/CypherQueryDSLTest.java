@@ -41,13 +41,13 @@ public class CypherQueryDSLTest {
                         .propertyName(ConditionProperty.POL_AREA)
                         .propertyValue("testValue")
                         .operator(ConditionOperator.NOT_EQUALS).build())
-                .action(Action.ENABLE)
+                .action(Action.DISABLE)
                 .build();
 
         var statement = new CypherStatementBuilder(rule).build();
         String expected = "MATCH (pol:`Port`)-[:`POL`]->(route:`Route`)<-[:`POD`]-(pod:`Port`) " +
                 "WHERE (pol.area <> $pod_code_0 AND route.state = 0) " +
-                "SET route.state = 1 " +
+                "SET route.state = 0 " +
                 "RETURN route";
         assertEquals(expected, statement.getCypher());
         assertEquals(1, statement.getParameters().size());

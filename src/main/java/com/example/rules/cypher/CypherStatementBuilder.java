@@ -33,8 +33,7 @@ public class CypherStatementBuilder {
 
         statement = statementBuilder
                 .where(condition.and(stateCondition))
-                // TODO add enable / disable actions
-                .set(getNode(CypherStatementBuilder.ROUTE).property("state").to(Cypher.literalOf(1)))
+                .set(rule.getAction().getSetExpression(getNode(CypherStatementBuilder.ROUTE)))
                 .returning(CypherStatementBuilder.ROUTE)
                 .build();
 
