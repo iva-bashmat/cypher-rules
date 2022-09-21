@@ -8,7 +8,7 @@ import org.neo4j.cypherdsl.core.Node;
 
 public enum Action {
     // TODO Cabotage - Probably needs to be removed
-    ENABLE(new FilterAction(1)), DISABLE(new FilterAction(0)), CABOTAGE(null);
+    ENABLE(new FilterAction(1)), DISABLE(new FilterAction(-1)), CABOTAGE(null);
 
     private final ActionHandler handler;
 
