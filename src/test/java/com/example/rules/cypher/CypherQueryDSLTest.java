@@ -34,6 +34,27 @@ public class CypherQueryDSLTest {
     }
 
     @Test
+    public void testBuildPolArea() {
+        var rule = Rule.builder()
+                .name("pol-area")
+                .condition(RuleCondition.builder()
+                        .propertyName(ConditionProperty.POL_AREA)
+                        .propertyValue("testValue")
+                        .operator(ConditionOperator.NOT_EQUALS).build())
+                .action(Action.ENABLE)
+                .build();
+
+        var statement = new CypherStatementBuilder(rule).build();
+        String expected = "MATCH (pol:`Port`)-[:`POL`]->(route:`Route`)<-[:`POD`]-(pod:`Port`) " +
+                "WHERE (pol.area <> $pod_code_0 AND route.state = 0) " +
+                "SET route.state = 1 " +
+                "RETURN route";
+        assertEquals(expected, statement.getCypher());
+        assertEquals(1, statement.getParameters().size());
+        assertEquals(rule.getCondition().getPropertyValue(), statement.getParameters().get("pod_code_0"));
+    }
+
+    @Test
     public void testPodCode() {
         var portCode = "testValue";
         var portCodeParam = Cypher.parameter("pod_code_0").withValue(portCode);

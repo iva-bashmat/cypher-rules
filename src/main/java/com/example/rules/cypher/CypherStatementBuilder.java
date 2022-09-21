@@ -28,10 +28,11 @@ public class CypherStatementBuilder {
                         .relationshipTo(getNode(CypherStatementBuilder.ROUTE), "POL")
                         .relationshipFrom(getNode(CypherStatementBuilder.POD), "POD"));
 
-        var condition = createWhereCondition((rule.getCondition()))
-                .and(getNode(CypherStatementBuilder.ROUTE).property("state").isEqualTo(Cypher.literalOf(0)));
+        var condition = createWhereCondition((rule.getCondition()));
+        var stateCondition = getNode(CypherStatementBuilder.ROUTE).property("state").isEqualTo(Cypher.literalOf(0));
+
         statement = statementBuilder
-                .where(condition)
+                .where(condition.and(stateCondition))
                 // TODO add enable / disable actions
                 .set(getNode(CypherStatementBuilder.ROUTE).property("state").to(Cypher.literalOf(1)))
                 .returning(CypherStatementBuilder.ROUTE)
@@ -41,9 +42,10 @@ public class CypherStatementBuilder {
 
     private Condition createWhereCondition(RuleCondition ruleCondition) {
         var conditionHandler = ruleCondition.getPropertyName().getHandler();
-        var portCodeParam = Cypher.parameter("pod_code_0").withValue(ruleCondition.getPropertyValue());
-        // TODO add logic for equals / not equals
-        return getNode(conditionHandler.getEntityName()).property(conditionHandler.getEntityPropertyName()).isEqualTo(portCodeParam);
+        var nodePropertyExpression = getNode(conditionHandler.getEntityName()).property(conditionHandler.getEntityPropertyName());
+        // TODO generate param name
+        var parameterExpression = Cypher.parameter("pod_code_0").withValue(ruleCondition.getPropertyValue());
+        return ruleCondition.getOperator().apply(nodePropertyExpression, parameterExpression);
     }
 
     private Node getNode(String name) {
